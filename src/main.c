@@ -3,9 +3,14 @@
  * @author Travis Hopkins
  */
 
-#include <stdio.h>
+#include <ncurses.h>
 
 int main(void) {
-	printf("Hello world!\n"); // initial code to prove compiler/makefile is working
-	return 0;
+	initscr();              // start ncurses
+	addstr("Hello world!"); // add message to buffer
+	refresh();              // show buffer
+	getch();                // get user input
+	endwin();               // quit ncurses
+	return 0;               // exit program
 }
+
