@@ -82,18 +82,10 @@ void makesnake(int direction){
     tail->prev = node;
     struct snake* prevnode= (struct snake*)malloc(sizeof(struct snake));
     for(int i = 0; i < snakestart ; i++){
-        if(direction == KEY_LEFT){
-            node->x = tail->x - i; node->y = tail->y;
-        }if(direction == KEY_RIGHT){
-            node->x = tail->x + i; node->y = tail->y;
-        }if(direction == KEY_UP){
-            node->x = tail->x; node->y = tail->y - i;
-        }if(direction == KEY_DOWN){
-            node->x = tail->x; node->y = tail->y + i;
-        }
+        node->x = tail->x + i; node->y = tail->y;
         move(node->y, node->x);
         printw("o");
-        mvprintw(i + 1, 1, "%d, %d", node->x, node->y);
+        //mvprintw(i + 1, 1, "%d, %d", node->x, node->y);
         node->prev = prevnode;
         node = prevnode;
     }
@@ -109,19 +101,33 @@ void movesnake(int dir){
         /*if(head->current_direction == DIR_RIGHT){ //WHY DOESN'T THIS WORK
             head->x += 1; tail->x += 1;
         }*/
+        
         struct snake* newhead = (struct snake*)malloc(sizeof(struct snake));
         newhead->x = head->x +1; newhead->y = head->y;
+        head->prev = newhead;
         head = newhead;
         tail = tail->prev;
     }
     else if(dir==KEY_LEFT){
-        head->x -= 1; tail->x -= 1;
+        struct snake* newhead = (struct snake*)malloc(sizeof(struct snake));
+        newhead->x = head->x -1; newhead->y = head->y;
+        head->prev = newhead;
+        head = newhead;
+        tail = tail->prev;
     }
     else if(dir==KEY_UP){
-        head->y -= 1; tail->y -= 1;
+        struct snake* newhead = (struct snake*)malloc(sizeof(struct snake));
+        newhead->x = head->x; newhead->y = head->y -1;
+        head->prev = newhead;
+        head = newhead;
+        tail = tail->prev;
     }
     else if(dir==KEY_DOWN){
-        head->y += 1; tail->x +=1;
+        struct snake* newhead = (struct snake*)malloc(sizeof(struct snake));
+        newhead->x = head->x; newhead->y = head->y +1;
+        head->prev = newhead;
+        head = newhead;
+        tail = tail->prev;
     }
     
     mvprintw(tail->y, tail->x, "o");
