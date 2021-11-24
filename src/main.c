@@ -10,7 +10,7 @@
 #define DIR_RIGHT 1
 #define DIR_DOWN 2
 #define DIR_LEFT
-int snakestart = 3;
+int snakestart = 5;
 
 void initializepit();
 void makesnake(int);
@@ -106,10 +106,13 @@ void movesnake(int dir){
     mvprintw(tail->y, tail->x, " ");
     mvprintw(head->y, head->x, "o");
     if(dir==KEY_RIGHT){
-        if(head->current_direction == DIR_RIGHT){ //WHY DOESN'T THIS WORK
+        /*if(head->current_direction == DIR_RIGHT){ //WHY DOESN'T THIS WORK
             head->x += 1; tail->x += 1;
-        }
-        
+        }*/
+        struct snake* newhead = (struct snake*)malloc(sizeof(struct snake));
+        newhead->x = head->x +1; newhead->y = head->y;
+        head = newhead;
+        tail = tail->prev;
     }
     else if(dir==KEY_LEFT){
         head->x -= 1; tail->x -= 1;
