@@ -44,8 +44,10 @@ int main(void) {
 	//int input = getchar();                // get user input
     while(gameend){
         //the game is played or something
+        
         int input = getch();                // get user input
         int snakesize = snakestart;
+        
         if(input == KEY_BACKSPACE){
             gameend = 0;
         }
@@ -85,7 +87,6 @@ void initializepit(){
 void makesnake(int direction){
     head = (struct snake*)malloc(sizeof(struct snake));
     tail = (struct snake*)malloc(sizeof(struct snake));
-    head->current_direction = DIR_RIGHT;
     tail->x = COLS/2;
     tail->y = LINES/2;
     struct snake* node= (struct snake*)malloc(sizeof(struct snake));
@@ -112,6 +113,7 @@ void makesnake(int direction){
     }
     head = node; 
     move(head->y, head->x);
+    head->current_direction = DIR_RIGHT;
     printw("@"); 
 }
 
