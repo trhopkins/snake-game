@@ -1,15 +1,17 @@
 /**
  * Snake game developed for CS 355
  * @author Travis Hopkins
- * CURRENT PROBLEM AT 108
+ * CURRENT PROBLEM AT 117
  */
 
 #include <ncurses.h>
 #include <stdlib.h>
-#define DIR_UP 0
-#define DIR_RIGHT 1
-#define DIR_DOWN 2
-#define DIR_LEFT
+#include <time.h>
+#include <unistd.h>
+#define DIR_UP KEY_UP
+#define DIR_RIGHT KEY_RIGHT
+#define DIR_DOWN KEY_DOWN
+#define DIR_LEFT KEY_LEFT
 int snakestart = 5;
 
 void initializepit();
@@ -31,10 +33,12 @@ int main(void) {
     curs_set(FALSE);
     cbreak();
     keypad(stdscr, TRUE);
-    
+    noecho();
+    nodelay(stdscr, TRUE);
     initializepit();        //create border around "snake pit"
     refresh();
     makesnake(KEY_RIGHT);
+    //srand(time(0)); //Seed random function
     refresh();
     int gameend = 1;
 	//int input = getchar();                // get user input
@@ -45,8 +49,13 @@ int main(void) {
         if(input == KEY_BACKSPACE){
             gameend = 0;
         }
-        else
+        else{ 
             movesnake(input);
+        }
+                
+        usleep(500000); //wait half a second
+        movesnake(head->current_direction);
+        
         refresh();
     }
 
@@ -69,6 +78,7 @@ void initializepit(){
         move(i, COLS-1);
         printw("|");
     }
+    //mvprintw(rand() % LINES -1, rand() % COLS -1, "T"); //Should place a trophy in random spot of pit
 }
 
 //prints the initial snake on the screen and creates the linked list that comprises the snake
@@ -82,7 +92,18 @@ void makesnake(int direction){
     tail->prev = node;
     struct snake* prevnode= (struct snake*)malloc(sizeof(struct snake));
     for(int i = 0; i < snakestart ; i++){
-        node->x = tail->x + i; node->y = tail->y;
+        if(direction == KEY_LEFT){
+            node->x = tail->x - i; node->y = tail->y;
+        }
+        else if(direction == KEY_RIGHT){
+            node->x = tail->x + i; node->y = tail->y;
+        }
+        else if(direction == KEY_UP){
+            node->x = tail->x; node->y = tail->y - 1;
+        }
+        else if(direction == KEY_DOWN){
+            node->x = tail->x; node->y = tail->y + 1;
+        }
         move(node->y, node->x);
         printw("o");
         //mvprintw(i + 1, 1, "%d, %d", node->x, node->y);
@@ -95,7 +116,7 @@ void makesnake(int direction){
 }
 
 void movesnake(int dir){
-    mvprintw(tail->y, tail->x, " ");
+    mvprintw(tail->y, tail->x, " "); //Tail is not properly working
     mvprintw(head->y, head->x, "o");
     if(dir==KEY_RIGHT){
         /*if(head->current_direction == DIR_RIGHT){ //WHY DOESN'T THIS WORK
@@ -107,6 +128,8 @@ void movesnake(int dir){
         head->prev = newhead;
         head = newhead;
         tail = tail->prev;
+        head->current_direction = DIR_RIGHT;
+        
     }
     else if(dir==KEY_LEFT){
         struct snake* newhead = (struct snake*)malloc(sizeof(struct snake));
@@ -114,6 +137,7 @@ void movesnake(int dir){
         head->prev = newhead;
         head = newhead;
         tail = tail->prev;
+        head->current_direction = DIR_LEFT;
     }
     else if(dir==KEY_UP){
         struct snake* newhead = (struct snake*)malloc(sizeof(struct snake));
@@ -121,6 +145,7 @@ void movesnake(int dir){
         head->prev = newhead;
         head = newhead;
         tail = tail->prev;
+        head->current_direction = DIR_UP;
     }
     else if(dir==KEY_DOWN){
         struct snake* newhead = (struct snake*)malloc(sizeof(struct snake));
@@ -128,6 +153,7 @@ void movesnake(int dir){
         head->prev = newhead;
         head = newhead;
         tail = tail->prev;
+        head->current_direction = DIR_DOWN;
     }
     
     mvprintw(tail->y, tail->x, "o");
