@@ -1,18 +1,25 @@
 /**
  * Snake game developed for CS 355
  * @author Travis Hopkins
+ * CURRENT PROBLEM AT 108
  */
 
 #include <ncurses.h>
 #include <stdlib.h>
+#define DIR_UP 0
+#define DIR_RIGHT 1
+#define DIR_DOWN 2
+#define DIR_LEFT
 int snakestart = 3;
 
 void initializepit();
 void makesnake(int);
 int detectcollision(int);
+void movesnake(int);
 void endgame();
 
 struct snake{
+    int current_direction; //0 if up, 1 if right, 2 if down, 3 if left
     int x;
     int y;
     struct snake* prev;
@@ -29,10 +36,18 @@ int main(void) {
     refresh();
     makesnake(KEY_RIGHT);
     refresh();
-    int gameend = 0;
-	int input = getchar();                // get user input
+    int gameend = 1;
+	//int input = getchar();                // get user input
     while(gameend){
         //the game is played or something
+        int input = getch();                // get user input
+        int snakesize = snakestart;
+        if(input == KEY_BACKSPACE){
+            gameend = 0;
+        }
+        else
+            movesnake(input);
+        refresh();
     }
 
 	endwin();               // quit ncurses
@@ -60,6 +75,7 @@ void initializepit(){
 void makesnake(int direction){
     head = (struct snake*)malloc(sizeof(struct snake));
     tail = (struct snake*)malloc(sizeof(struct snake));
+    head->current_direction = DIR_RIGHT;
     tail->x = COLS/2;
     tail->y = LINES/2;
     struct snake* node= (struct snake*)malloc(sizeof(struct snake));
@@ -84,6 +100,29 @@ void makesnake(int direction){
     head = node; 
     move(head->y, head->x);
     printw("@"); 
+}
+
+void movesnake(int dir){
+    mvprintw(tail->y, tail->x, " ");
+    mvprintw(head->y, head->x, "o");
+    if(dir==KEY_RIGHT){
+        if(head->current_direction == DIR_RIGHT){ //WHY DOESN'T THIS WORK
+            head->x += 1; tail->x += 1;
+        }
+        
+    }
+    else if(dir==KEY_LEFT){
+        head->x -= 1; tail->x -= 1;
+    }
+    else if(dir==KEY_UP){
+        head->y -= 1; tail->y -= 1;
+    }
+    else if(dir==KEY_DOWN){
+        head->y += 1; tail->x +=1;
+    }
+    
+    mvprintw(tail->y, tail->x, "o");
+    mvprintw(head->y, head->x, "@");    
 }
 
 /*returns 0 if there is no character in the next space, and 1 if there is a character
