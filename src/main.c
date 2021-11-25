@@ -1,7 +1,7 @@
 /**
  * Snake game developed for CS 355
  * @author Travis Hopkins
- * CURRENT PROBLEM AT 117
+ * CURRENT PROBLEM AT 121
  */
 
 #include <ncurses.h>
@@ -33,7 +33,7 @@ int main(void) {
     curs_set(FALSE);
     cbreak();
     keypad(stdscr, TRUE);
-    noecho();
+    //noecho();
     nodelay(stdscr, TRUE);
     initializepit();        //create border around "snake pit"
     refresh();
@@ -121,10 +121,6 @@ void movesnake(int dir){
     mvprintw(tail->y, tail->x, " "); //Tail is not properly working
     mvprintw(head->y, head->x, "o");
     if(dir==KEY_RIGHT){
-        /*if(head->current_direction == DIR_RIGHT){ //WHY DOESN'T THIS WORK
-            head->x += 1; tail->x += 1;
-        }*/
-        
         struct snake* newhead = (struct snake*)malloc(sizeof(struct snake));
         newhead->x = head->x +1; newhead->y = head->y;
         head->prev = newhead;
@@ -158,7 +154,7 @@ void movesnake(int dir){
         head->current_direction = DIR_DOWN;
     }
     
-    mvprintw(tail->y, tail->x, "o");
+    //mvprintw(tail->y, tail->x, "o");
     mvprintw(head->y, head->x, "@");    
 }
 
