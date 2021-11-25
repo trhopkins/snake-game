@@ -20,6 +20,7 @@ int detectcollision(int);
 void movesnake(int);
 void endgame();
 
+
 struct snake{
     int current_direction; //0 if up, 1 if right, 2 if down, 3 if left
     int x;
@@ -27,7 +28,7 @@ struct snake{
     struct snake* prev;
 };
 struct snake* head; struct snake* tail;
-
+struct snake * addsnake(struct snake **, int, int);
 int main(void) {
 	initscr();              // start ncurses
     curs_set(FALSE);
@@ -86,33 +87,36 @@ void makesnake(int direction){
     head = (struct snake*)malloc(sizeof(struct snake));
     tail = (struct snake*)malloc(sizeof(struct snake));
     head->current_direction = DIR_RIGHT;
+
     tail->x = COLS/2;
     tail->y = LINES/2;
     struct snake* node= (struct snake*)malloc(sizeof(struct snake));
-    tail->prev = node;
-    struct snake* prevnode= (struct snake*)malloc(sizeof(struct snake));
-    for(int i = 0; i < snakestart ; i++){
+    int x = tail->x; int y = tail->y; 
+    head->x = x; head->y = y;
+    for(int i = 1; i < snakestart ; i++){
+        
+
         if(direction == KEY_LEFT){
-            node->x = tail->x - i; node->y = tail->y;
+            x = x - 1; 
         }
         else if(direction == KEY_RIGHT){
-            node->x = tail->x + i; node->y = tail->y;
+            x = x - 1; 
         }
         else if(direction == KEY_UP){
-            node->x = tail->x; node->y = tail->y - 1;
+            y = y - 1;
         }
         else if(direction == KEY_DOWN){
-            node->x = tail->x; node->y = tail->y + 1;
+            y = y + 1;
         }
-        move(node->y, node->x);
+        move(y, x);
         printw("o");
-        //mvprintw(i + 1, 1, "%d, %d", node->x, node->y);
-        node->prev = prevnode;
-        node = prevnode;
+        node = addsnake(&tail, x, y);
+
     }
-    head = node; 
+    node->prev = head; //this is the problem. node is tail.prev, so it cuts off most of the linked list
     move(head->y, head->x);
-    printw("@"); 
+    printw("@");
+    
 }
 
 void movesnake(int dir){
@@ -178,4 +182,13 @@ int detectcollision(int direction){
     }else{
         return 1;
     }
+}
+
+struct snake * addsnake(struct snake ** node, int x, int y){
+    struct snake * newnode = (struct snake*)malloc(sizeof(struct snake));
+    newnode->x = x;
+    newnode->y = y;
+    newnode->prev = *node;
+    *node = newnode;
+    return newnode;
 }
