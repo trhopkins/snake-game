@@ -85,7 +85,7 @@ void initializepit(){
 
 //prints the initial snake on the screen and creates the linked list that comprises the snake
 void makesnake(int direction){
-    head = (struct snake*)malloc(sizeof(struct snake));
+    //head = (struct snake*)malloc(sizeof(struct snake));
     tail = (struct snake*)malloc(sizeof(struct snake));
     tail->x = COLS/2;
     tail->y = LINES/2;
