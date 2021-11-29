@@ -19,8 +19,10 @@ void makesnake(int);
 int detectcollision(int);
 void movesnake(int);
 void endgame();
-
-
+void altmakesnake(int); 
+void altmovesnake(int);
+int headdir;
+int headx, tailx, heady, taily, taildir;
 struct snake{
     int current_direction; //0 if up, 1 if right, 2 if down, 3 if left
     int x;
@@ -35,27 +37,34 @@ int main(void) {
     cbreak();
     keypad(stdscr, TRUE);
     noecho();
-    nodelay(stdscr, TRUE);
+    //nodelay(stdscr, TRUE);
     initializepit();        //create border around "snake pit"
     refresh();
-    makesnake(KEY_RIGHT);
+    //makesnake(KEY_RIGHT);
+    altmakesnake(KEY_RIGHT);
     //srand(time(0)); //Seed random function
     refresh();
     int gameend = 1;
 	//int input = getchar();                // get user input
+    mvprintw(2,1, "Before loop: %d, %d   %d, %d", headx, heady, tailx, taily); 
     while(gameend){
         //the game is played or something
+        mvprintw(3,1, "before getchar: %d, %d   %d, %d", headx, heady, tailx, taily); 
         int input = getch();                // get user input
+        mvprintw(4,1, "after getchar: %d, %d   %d, %d", headx, heady, tailx, taily); 
         int snakesize = snakestart;
+        
         if(input == KEY_BACKSPACE){
             gameend = 0;
         }
         else{ 
-            movesnake(input);
+            
+            altmovesnake(input);
+            refresh();
         }
                 
-        usleep(500000); //wait half a second
-        movesnake(head->current_direction);
+        //usleep(500000); //wait half a second
+        //altmovesnake(headdir);
         
         refresh();
     }
@@ -116,6 +125,115 @@ void makesnake(int direction){
     node->prev = head; //this is the problem. node is tail.prev, so it cuts off most of the linked list
     move(head->y, head->x);
     printw("@");
+    
+}
+
+void altmakesnake(int direction){
+    headx = COLS/2;
+    heady = LINES/2;
+    taily = LINES/2; tailx = COLS/2;
+    headdir = direction; taildir = direction;
+    
+    for(int i = 0; i < snakestart ; i++){
+
+        if(direction == KEY_LEFT){
+            tailx +=1;
+            mvprintw(heady, headx + i , "<");
+            
+        }
+        else if(direction == KEY_RIGHT){
+            tailx-=1;
+            mvprintw(heady, headx - i, ">");
+            
+        }
+        else if(direction == KEY_UP){
+            taily += 1;
+            mvprintw(heady + i, headx, "^");
+            
+        }
+        else if(direction == KEY_DOWN){
+            taily -= 1;
+            mvprintw(heady - i, headx, "v");
+            
+        }
+    }
+    move(heady, headx);
+    printw("@");
+    mvprintw(1,1, "In makesnake: %d, %d   %d, %d", headx, heady, tailx, taily);    
+    
+}
+
+void altmovesnake(int direction){
+    mvprintw(4,1, "in movesnake: %d, %d   %d, %d taildir = %d", headx, heady, tailx, taily, taildir);
+    
+    if(direction == KEY_LEFT){
+        mvprintw(heady, headx, "<");
+    }
+    else if(direction == KEY_RIGHT){
+        mvprintw(heady, headx, ">");
+    }
+    else if(direction == KEY_UP){
+        mvprintw(heady, headx, "^");
+    }
+    else if(direction == KEY_DOWN){
+        mvprintw(heady, headx, "v");
+    }
+    headdir= direction;
+
+
+    if(direction == KEY_LEFT){
+        headx -= 1;
+        mvprintw(heady, headx, "@");
+    }
+    else if(direction == KEY_RIGHT){
+        headx += 1;
+        mvprintw(heady, headx, "@");
+    }
+    else if(direction == KEY_UP){
+        heady -= 1;
+        mvprintw(heady, headx, "@");
+    }
+    else if(direction == KEY_DOWN){
+        heady += 1;
+        mvprintw(heady, headx, "@");
+    }   
+    mvprintw(taily, tailx, " ");
+    if(taildir == KEY_LEFT){
+        tailx -= 1;
+    }
+    else if(taildir == KEY_RIGHT){
+        tailx += 1;
+    }
+    else if(taildir == KEY_UP){
+        taily -= 1;
+    }
+    else if(taildir == KEY_DOWN){
+        taily += 1;
+    }
+ 
+    int test;
+    if(taildir == KEY_LEFT){
+        test = mvinch(taily, tailx);
+    }
+    else if(taildir == KEY_RIGHT){
+        test = mvinch(taily, tailx);
+    }
+    else if(taildir == KEY_UP){
+        test = mvinch(taily, tailx);
+    }
+    else if(taildir == KEY_DOWN){
+        test = mvinch(taily, tailx);
+    }
+    
+    if(test == '<'){
+        taildir = KEY_LEFT;        
+    }else if(test == '>'){
+        taildir = KEY_RIGHT;
+    }else if(test == '^'){
+        taildir = KEY_UP;
+    }else if(test == 'v'){
+        taildir = KEY_DOWN;
+    }    
     
 }
 
