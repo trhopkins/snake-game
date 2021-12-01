@@ -1,7 +1,5 @@
 /**
  * Snake game developed for CS 355
- * @author Travis Hopkins
- * CURRENT PROBLEM AT 117
  */
 
 #include <ncurses.h>
@@ -32,7 +30,7 @@ struct snake{
 struct snake* head; struct snake* tail;
 struct snake * addsnake(struct snake **, int, int);
 int main(void) {
-	initscr();              // start ncurses
+    initscr();              // start ncurses
     curs_set(FALSE);
     cbreak();
     keypad(stdscr, TRUE);
@@ -45,7 +43,7 @@ int main(void) {
     //srand(time(0)); //Seed random function
     refresh();
     int gameend = 1;
-	//int input = getchar();                // get user input
+    //int input = getchar();                // get user input
     mvprintw(2,1, "Before loop: %d, %d   %d, %d", headx, heady, tailx, taily); 
     while(gameend){
         //the game is played or something
@@ -69,8 +67,8 @@ int main(void) {
         refresh();
     }
 
-	endwin();               // quit ncurses
-	return 0;               // exit program
+    endwin();               // quit ncurses
+    return 0;               // exit program
 }
 
 /*creates the border around the playing area 
@@ -310,3 +308,4 @@ struct snake * addsnake(struct snake ** node, int x, int y){
     *node = newnode;
     return newnode;
 }
+
