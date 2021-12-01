@@ -1,5 +1,4 @@
-default:
-	build
+default: build
 
 build:
 	gcc src/main.c -o snake_game -l ncurses
