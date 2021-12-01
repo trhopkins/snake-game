@@ -22,6 +22,7 @@ void endgame();
 void altmakesnake(int); 
 void altmovesnake(int);
 void gameover();
+void growsnake();
 int headdir;
 int headx, tailx, heady, taily, taildir;
 struct snake{
@@ -67,7 +68,7 @@ int main(void) {
                 gameend = 1;
             }else if(testcoll == 2){
                 altmovesnake(input);
-                //grow the snake
+                growsnake();
             }
             else{
                 altmovesnake(input);
@@ -329,4 +330,19 @@ struct snake * addsnake(struct snake ** node, int x, int y){
     newnode->prev = *node;
     *node = newnode;
     return newnode;
+}
+void growsnake(){
+    if(taildir == KEY_LEFT){
+        tailx -= 1;
+        mvprintw(taily, tailx, "<");
+    }else if(taildir == KEY_RIGHT){
+        tailx += 1;
+        mvprintw(taily, tailx, ">");
+    }else if(taildir == KEY_UP){
+        taily -= 1;
+        mvprintw(taily, tailx, "^");
+    }else if (taildir == KEY_DOWN){
+        tailx += 1;
+        mvprintw(taily, tailx, "v");
+    }
 }
