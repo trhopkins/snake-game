@@ -35,7 +35,7 @@ int main(void) {
     cbreak();
     keypad(stdscr, TRUE);
     noecho();
-    //nodelay(stdscr, TRUE);
+    nodelay(stdscr, TRUE);
     initializepit();        //create border around "snake pit"
     refresh();
     //makesnake(KEY_RIGHT);
@@ -55,13 +55,15 @@ int main(void) {
         if(input == KEY_BACKSPACE){
             gameend = 0;
         }
-        else{ 
-            
+        else if(input == KEY_LEFT || input == KEY_RIGHT || input == KEY_DOWN || input == KEY_UP){ 
+            headdir = input; taildir = input;
             altmovesnake(input);
-            refresh();
+        }
+        else{
+            altmovesnake(headdir);
         }
                 
-        //usleep(500000); //wait half a second
+        usleep(500000); //wait half a second
         //altmovesnake(headdir);
         
         refresh();
