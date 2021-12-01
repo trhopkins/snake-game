@@ -132,26 +132,26 @@ void altmakesnake(int direction){
     taily = LINES/2; tailx = COLS/2;
     headdir = direction; taildir = direction;
     
-    for(int i = 0; i < snakestart ; i++){
+    for(int i = 1; i < snakestart ; i++){
 
         if(direction == KEY_LEFT){
             tailx +=1;
-            mvprintw(heady, headx + i , "<");
+            mvprintw(taily, tailx, "<");
             
         }
         else if(direction == KEY_RIGHT){
             tailx-=1;
-            mvprintw(heady, headx - i, ">");
+            mvprintw(taily, tailx, ">");
             
         }
         else if(direction == KEY_UP){
             taily += 1;
-            mvprintw(heady + i, headx, "^");
+            mvprintw(taily, tailx, "^");
             
         }
         else if(direction == KEY_DOWN){
             taily -= 1;
-            mvprintw(heady - i, headx, "v");
+            mvprintw(taily, tailx, "v");
             
         }
     }
