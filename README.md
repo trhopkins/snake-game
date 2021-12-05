@@ -2,8 +2,8 @@
 
 Group project members:
 
-* Ash
-* Harry
-* Rahil
-* Travis
+* Ash Taber
+* Harry Schmitt
+* Rahil Chaluwala
+* Travis Hopkins
 
