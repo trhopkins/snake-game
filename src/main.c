@@ -129,24 +129,25 @@ void altmakesnake(int direction, struct snake array[]) {
     array[1].y = LINES/2; array[1].x = COLS/2; //tail, the next element after head, set to horizontal and vertical center
     array[0].current_direction = direction; array[1].current_direction = direction; //head and tail current direction set to passed direction
 
-    for (int i = 1; i <= snakestart ; i++) {
+    for (int i = 1; i < snakestart ; i++) {
         if (direction == KEY_LEFT) {
-            array[i].x += i;
+            array[i].x += 1;
             mvprintw(array[i].y, array[i].x, "<");
 
         } else if (direction == KEY_RIGHT) {
-            array[i].x -= i;
+            array[i].x -= 1;
             mvprintw(array[i].y, array[i].x, ">");
 
         } else if (direction == KEY_UP) {
-            array[i].y += i;
+            array[i].y += 1;
             mvprintw(array[i].y, array[i].x, "^");
 
         } else if (direction == KEY_DOWN) {
-            array[i].y -= i;
+            array[i].y -= 1;
             mvprintw(array[i].y, array[i].x, "v");
 
         }
+        array[i+1].x = array[i].x; array[i+1].y = array[i].y; array[i].current_direction = direction;
     }
     move(array[0].y, array[0].x);
     printw("@");
