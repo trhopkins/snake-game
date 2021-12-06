@@ -27,7 +27,7 @@ int detectcollision(int);
 void movesnake(int);
 void endgame();
 void altmakesnake(int, struct snake[]);
-void altmovesnake(int);
+void altmovesnake(int, struct snake[]);
 
 int headdir;
 int headx, tailx, heady, taily, taildir;
@@ -61,10 +61,10 @@ int main(void) {
         if (input == KEY_BACKSPACE) {
             gameend = 0;
         } else if (input == KEY_LEFT || input == KEY_RIGHT || input == KEY_DOWN || input == KEY_UP) {
-            headdir = input; taildir = input;
-            altmovesnake(input);
+            snake_array[0].current_direction = input; taildir = input;
+            altmovesnake(input, snake_array);
         } else {
-            altmovesnake(headdir);
+            altmovesnake(headdir, snake_array);
         }
 
         usleep(500000); //wait half a second
@@ -155,64 +155,65 @@ void altmakesnake(int direction, struct snake array[]) {
 
 }
 
-void altmovesnake(int direction) {
+void altmovesnake(int direction, struct snake array[]) {
     mvprintw(4,1, "in movesnake: %d, %d   %d, %d taildir = %d", headx, heady, tailx, taily, taildir);
 
     if (direction == KEY_LEFT) {
-        mvprintw(heady, headx, "<");
+        mvprintw(array[0].y, array[0].x, "<");
     } else if (direction == KEY_RIGHT) {
-        mvprintw(heady, headx, ">");
+        mvprintw(array[0].y, array[0].x, ">");
     } else if (direction == KEY_UP) {
-        mvprintw(heady, headx, "^");
+        mvprintw(array[0].y, array[0].x, "^");
     } else if (direction == KEY_DOWN) {
-        mvprintw(heady, headx, "v");
+        mvprintw(array[0].y, array[0].x, "v");
     }
-    headdir= direction;
+    array[0].current_direction = direction;
 
 
     if (direction == KEY_LEFT) {
-        headx -= 1;
-        mvprintw(heady, headx, "@");
+        array[0].x -= 1;
+        mvprintw(array[0].y, array[0].x, "@");
     } else if (direction == KEY_RIGHT) {
-        headx += 1;
-        mvprintw(heady, headx, "@");
+        array[0].x += 1;
+        mvprintw(array[0].y, array[0].x, "@");
     } else if (direction == KEY_UP) {
-        heady -= 1;
-        mvprintw(heady, headx, "@");
+        array[0].y -= 1;
+        mvprintw(array[0].y, array[0].x, "@");
     } else if (direction == KEY_DOWN) {
-        heady += 1;
-        mvprintw(heady, headx, "@");
+        array[0].y += 1;
+        mvprintw(array[0].y, array[0].x, "@");
     }
-    mvprintw(taily, tailx, " ");
-    if (taildir == KEY_LEFT) {
-        tailx -= 1;
-    } else if (taildir == KEY_RIGHT) {
-        tailx += 1;
-    } else if (taildir == KEY_UP) {
-        taily -= 1;
-    } else if (taildir == KEY_DOWN) {
-        taily += 1;
+    
+    mvprintw(array[snakestart].y, array[snakestart].x, " ");
+    if (array[snakestart].current_direction == KEY_LEFT) {
+        array[snakestart].x -= 1;
+    } else if (array[snakestart].current_direction == KEY_RIGHT) {
+        array[snakestart].x += 1;
+    } else if (array[snakestart].current_direction == KEY_UP) {
+        array[snakestart].y -= 1;
+    } else if (array[snakestart].current_direction == KEY_DOWN) {
+        array[snakestart].y += 1;
     }
 
     int test;
-    if (taildir == KEY_LEFT) {
-        test = mvinch(taily, tailx);
-    } else if (taildir == KEY_RIGHT) {
-        test = mvinch(taily, tailx);
-    } else if (taildir == KEY_UP) {
-        test = mvinch(taily, tailx);
-    } else if (taildir == KEY_DOWN) {
-        test = mvinch(taily, tailx);
+    if (array[snakestart].current_direction == KEY_LEFT) {
+        test = mvinch(array[snakestart].y, array[snakestart].x);
+    } else if (array[snakestart].current_direction == KEY_RIGHT) {
+        test = mvinch(array[snakestart].y, array[snakestart].x);
+    } else if (array[snakestart].current_direction == KEY_UP) {
+        test = mvinch(array[snakestart].y, array[snakestart].x);
+    } else if (array[snakestart].current_direction == KEY_DOWN) {
+        test = mvinch(array[snakestart].y, array[snakestart].x);
     }
 
     if (test == '<') {
-        taildir = KEY_LEFT;
+        array[snakestart].current_direction = KEY_LEFT;
     } else if (test == '>') {
-        taildir = KEY_RIGHT;
+        array[snakestart].current_direction = KEY_RIGHT;
     } else if (test == '^') {
-        taildir = KEY_UP;
+        array[snakestart].current_direction = KEY_UP;
     } else if (test == 'v') {
-        taildir = KEY_DOWN;
+        array[snakestart].current_direction = KEY_DOWN;
     }
 
 }
