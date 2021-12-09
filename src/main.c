@@ -156,7 +156,7 @@ void altmakesnake(int direction, struct snake array[]) {
 }
 
 void altmovesnake(int direction, struct snake array[]) {
-    mvprintw(4,1, "in movesnake: %d, %d   %d, %d taildir = %d", headx, heady, tailx, taily, taildir);
+    mvprintw(4,1, "in movesnake: %d, %d   %d, %d taildir = %d", array[0].x, array[0].y, array[snakestart].x, array[snakestart].y, array[snakestart].current_direction);
 
     if (direction == KEY_LEFT) {
         mvprintw(array[0].y, array[0].x, "<");
@@ -184,7 +184,7 @@ void altmovesnake(int direction, struct snake array[]) {
         mvprintw(array[0].y, array[0].x, "@");
     }
     
-    mvprintw(array[snakestart].y, array[snakestart].x, " ");
+    
     if (array[snakestart].current_direction == KEY_LEFT) {
         array[snakestart].x -= 1;
     } else if (array[snakestart].current_direction == KEY_RIGHT) {
@@ -194,6 +194,7 @@ void altmovesnake(int direction, struct snake array[]) {
     } else if (array[snakestart].current_direction == KEY_DOWN) {
         array[snakestart].y += 1;
     }
+    mvprintw(array[snakestart].y, array[snakestart].x, " ");
 
     int test;
     if (array[snakestart].current_direction == KEY_LEFT) {
