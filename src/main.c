@@ -48,6 +48,9 @@ int main(void) {
 
     struct snake snake_array[((COLS * 2) + (LINES * 2))/2];
     altmakesnake(KEY_RIGHT, snake_array);
+    for(int i = 0; i < snakestart; i ++){
+        mvprintw(6 + i, 1, "[%d]", snake_array[i].x);
+    }
     refresh();
     int gameend = 1;
     mvprintw(2,1, "Before loop: %d, %d   %d, %d", headx, heady, tailx, taily);
@@ -132,7 +135,7 @@ void altmakesnake(int direction, struct snake array[]) {
     for (int i = 1; i < snakestart ; i++) {
         array[i].y = LINES/2; array[i].x  = COLS/2;
         if (direction == KEY_LEFT) {
-            array[i].x += 1;
+            array[i].x += i;
             mvprintw(array[i].y, array[i].x, "<");
 
         } else if (direction == KEY_RIGHT) {
@@ -141,17 +144,17 @@ void altmakesnake(int direction, struct snake array[]) {
             mvprintw(array[i].y, array[i].x, ">");
 
         } else if (direction == KEY_UP) {
-            array[i].y += 1;
+            array[i].y += i;
             mvprintw(array[i].y, array[i].x, "^");
 
         } else if (direction == KEY_DOWN) {
-            array[i].y -= 1;
+            array[i].y -= i;
             mvprintw(array[i].y, array[i].x, "v");
 
         }
-        //array[i+1].x = array[i].x; array[i+1].y = array[i].y; array[i].current_direction = direction;
+        //array[i+1].x = array[i].x; array[i+1].y = array[i].y; 
+        array[i].current_direction = direction;
     }
-    array[snakestart-1].current_direction = direction;
     move(array[0].y, array[0].x);
     printw("@");
     mvprintw(1,1, "In makesnake: %d, %d   %d, %d", array[0].x, array[0].y, array[snakestart-1].x, array[snakestart-1].y);
@@ -160,7 +163,11 @@ void altmakesnake(int direction, struct snake array[]) {
 
 void altmovesnake(int direction, struct snake array[]) {
     mvprintw(4,1, "in movesnake: %d, %d   %d, %d taildir = %d", array[0].x, array[0].y, array[snakestart-1].x, array[snakestart-1].y, array[snakestart-1].current_direction);
-
+    
+    mvprintw(array[snakestart-1].y, array[snakestart-1].x, " ");
+    for(int i = snakestart - 1; i > 0; i--){
+        array[i].x = array[i-1].x; array[i].y = array[i-1].y; //Each element's position is set to the position of the element before it
+    }
     //prints an arrow in place of head, sets head direction
     if (direction == KEY_LEFT) {
         mvprintw(array[0].y, array[0].x, "<");
@@ -172,7 +179,6 @@ void altmovesnake(int direction, struct snake array[]) {
         mvprintw(array[0].y, array[0].x, "v");
     }
     array[0].current_direction = direction;
-
     //moves position of head, prints head
     if (direction == KEY_LEFT) {
         array[0].x -= 1;
@@ -188,11 +194,8 @@ void altmovesnake(int direction, struct snake array[]) {
         mvprintw(array[0].y, array[0].x, "@");
     }
     
-    for(int i = 1; i < snakestart; i++){
-        array[i].x = array[i-1].x; array[i].y = array[i-1].y; //Each element's position is set to the position of the element before it
-    }
     //Tail is moved
-    if (array[snakestart].current_direction == KEY_LEFT) {
+   /* if (array[snakestart].current_direction == KEY_LEFT) {
         array[snakestart].x -= 1;
     } else if (array[snakestart-1].current_direction == KEY_RIGHT) {
         array[snakestart].x += 1;
@@ -200,9 +203,9 @@ void altmovesnake(int direction, struct snake array[]) {
         array[snakestart].y -= 1;
     } else if (array[snakestart-1].current_direction == KEY_DOWN) {
         array[snakestart].y += 1;
-    }
-    mvprintw(array[snakestart].y, array[snakestart].x, " ");
-
+    }*/
+    
+/*
     int test;
     if (array[snakestart].current_direction == KEY_LEFT) {
         test = mvinch(array[snakestart].y, array[snakestart].x);
@@ -223,6 +226,7 @@ void altmovesnake(int direction, struct snake array[]) {
     } else if (test == 'v') {
         array[snakestart].current_direction = KEY_DOWN;
     }
+    */
 
 }
 
