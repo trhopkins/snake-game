@@ -42,7 +42,7 @@ int main(void) {
     cbreak();
     keypad(stdscr, TRUE);
     noecho();
-    //nodelay(stdscr, TRUE);
+    nodelay(stdscr, TRUE);
     initializepit();        //create border around "snake pit"
     refresh();
 
@@ -67,7 +67,7 @@ int main(void) {
             snake_array[0].current_direction = input; taildir = input;
             altmovesnake(input, snake_array);
         } else {
-            altmovesnake(headdir, snake_array);
+            altmovesnake(snake_array[0].current_direction, snake_array);
         }
 
         usleep(500000); //wait half a second
