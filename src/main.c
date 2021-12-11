@@ -23,12 +23,16 @@ struct snake {
 
 void initializepit();
 void makesnake(int);
-int detectcollision(int);
+int detectcollision(int, struct snake[]);
 void movesnake(int);
 void endgame();
 void altmakesnake(int, struct snake[]);
 void altmovesnake(int, struct snake[]);
+void gameover();
+void gamewin();
+void growsnake(struct snake[]);
 
+int win;
 int headdir;
 int headx, tailx, heady, taily, taildir;
 
@@ -43,6 +47,7 @@ int main(void) {
     keypad(stdscr, TRUE);
     noecho();
     nodelay(stdscr, TRUE);
+    srand(time(0));
     initializepit();        //create border around "snake pit"
     refresh();
 
@@ -54,6 +59,7 @@ int main(void) {
     refresh();
     int gameend = 1;
     mvprintw(2,1, "Before loop: %d, %d   %d, %d", headx, heady, tailx, taily);
+
     while (gameend) {
         //the game is played or something
         mvprintw(3,1, "before getchar: %d, %d   %d, %d", headx, heady, tailx, taily);
@@ -64,10 +70,38 @@ int main(void) {
         if (input == KEY_BACKSPACE) {
             gameend = 0;
         } else if (input == KEY_LEFT || input == KEY_RIGHT || input == KEY_DOWN || input == KEY_UP) {
+            int testcoll = detectcollision(input, snake_array);
+            if(testcoll == 1){
+                gameover(); 
+                refresh();               
+                gameend = 0;
+            }else if(testcoll == 2){
+                altmovesnake(input, snake_array);
+                growsnake(snake_array);
+                if (snakestart >= win){
+                    gameend = 0;
+                }
+                mvprintw(rand() % LINES -1, rand() % COLS -1, "*");
+            }else{
+                altmovesnake(input, snake_array);
+            }         
             snake_array[0].current_direction = input; taildir = input;
-            altmovesnake(input, snake_array);
         } else {
-            altmovesnake(snake_array[0].current_direction, snake_array);
+            int testcoll = detectcollision(snake_array[0].current_direction, snake_array);
+            if(testcoll == 1){
+                gameover(); 
+                refresh();               
+                gameend = 0;
+            }else if(testcoll == 2){
+                altmovesnake(snake_array[0].current_direction, snake_array);
+                growsnake(snake_array);
+                if (snakestart >= win){
+                    gameend = 0;
+                }
+                mvprintw(rand() % LINES -1, rand() % COLS -1, "*");
+            }else{
+                altmovesnake(snake_array[0].current_direction, snake_array);
+            }
         }
 
         usleep(500000); //wait half a second
@@ -79,6 +113,7 @@ int main(void) {
 
 // creates the border around the playing area
 void initializepit() {
+    win = LINES + COLS;
     for (int i = 0; i < COLS; i ++) {
         move(0,i);
         printw("-");
@@ -91,7 +126,7 @@ void initializepit() {
         move(i, COLS-1);
         printw("|");
     }
-    //mvprintw(rand() % LINES -1, rand() % COLS -1, "T"); //Should place a trophy in random spot of pit
+    mvprintw(rand() % LINES -1, rand() % COLS -1, "*"); //Should place a trophy in random spot of pit
 }
 
 //prints the initial snake on the screen and creates the linked list that comprises the snake
@@ -274,20 +309,23 @@ void movesnake(int dir) {
 
 /*returns 0 if there is no character in the next space, and 1 if there is a character
 */
-int detectcollision(int direction) {
+int detectcollision(int direction, struct snake array[]){
     int testch;
-    if (direction == KEY_LEFT) {
-        testch = mvinch(head->y, head->x + 1);
-    } if (direction == KEY_RIGHT) {
-        testch = mvinch(head->y, head->x - 1);
-    } if (direction == KEY_UP) {
-        testch = mvinch(head->y + 1, head->x);
-    } if (direction == KEY_DOWN) {
-        testch = mvinch(head->y - 1, head->x);
+    if(direction == KEY_LEFT){
+        testch = mvinch(array[0].y, array[0].x- 1);
+    }if(direction == KEY_RIGHT){
+        testch = mvinch(array[0].y, array[0].x + 1);
+    }if(direction == KEY_UP){
+        testch = mvinch(array[0].y - 1, array[0].x);
+    }if(direction == KEY_DOWN){
+        testch = mvinch(array[0].y + 1, array[0].x);
     }
-    if (testch == ' ') {
+    if(testch == ' '){
         return 0;
-    } else {
+    }else if (testch == '*'){
+        return 2;
+    }
+    else{
         return 1;
     }
 }
@@ -300,4 +338,35 @@ struct snake * addsnake(struct snake ** node, int x, int y){
     *node = newnode;
     return newnode;
 }
+void gameover(){
+    mvprintw(LINES/2, (COLS/2)-10, "Game Over! Score: %d", snakestart);
+    mvprintw(LINES/2 + 1, (COLS/2) - 11, "Press any key to exit");
+    refresh();
+    getchar();
+}
 
+void gamewin(){
+    mvprintw(LINES/2 - 15, COLS/2, "You won! Press any key to exit");
+    refresh();
+    getchar();
+}
+
+void growsnake(struct snake array[]){
+    
+    snakestart += 1; array[snakestart - 1].x = array[snakestart - 2].x;array[snakestart - 1].y = array[snakestart - 2].y;array[snakestart - 1].current_direction = array[snakestart - 2].current_direction;
+    
+    if(array[snakestart - 1].current_direction == KEY_LEFT){
+        
+        array[snakestart - 1].x += 1;
+        mvprintw(array[snakestart - 1].y, array[snakestart - 1].y, "<");
+    }else if(array[snakestart - 1].current_direction == KEY_RIGHT){
+        array[snakestart - 1].x -= 1;
+        mvprintw(array[snakestart - 1].y, array[snakestart - 1].x, ">");
+    }else if(array[snakestart - 1].current_direction == KEY_UP){
+        array[snakestart - 1].y += 1;
+        mvprintw(array[snakestart - 1].y, array[snakestart - 1].x, "^");
+    }else if (array[snakestart - 1].current_direction== KEY_DOWN){
+        array[snakestart - 1].y -= 1;
+        mvprintw(array[snakestart - 1].y, array[snakestart - 1].x, "v");
+    } 
+}
