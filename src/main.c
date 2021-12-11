@@ -12,18 +12,20 @@
 #define DIR_RIGHT KEY_RIGHT
 #define DIR_DOWN KEY_DOWN
 #define DIR_LEFT KEY_LEFT
-int snakestart = 5;
+int snakesize = 5;
 
 void initializepit();
 void makesnake(int);
 int detectcollision(int);
 void movesnake(int);
 void endgame();
-void altmakesnake(int); 
+void altmakesnake(); 
 void altmovesnake(int);
 void gameover();
+void gamewin();
 void growsnake();
 int headx, tailx, heady, taily, headdir, taildir;
+int win;
 struct snake{
     int current_direction; //0 if up, 1 if right, 2 if down, 3 if left
     int x;
@@ -38,12 +40,13 @@ int main(void) {
     cbreak();
     keypad(stdscr, TRUE);
     noecho();
+    srand(time(0));
     //nodelay(stdscr, TRUE);
     initializepit();        //create border around "snake pit"
     refresh();
     //makesnake(KEY_RIGHT);
-    altmakesnake(KEY_RIGHT);
-    srand(time(0)); //Seed random function
+    altmakesnake();
+     //Seed random function
     refresh();
     int gameend = 1;
     int testcoll;
@@ -54,7 +57,6 @@ int main(void) {
         mvprintw(3,1, "before getchar: %d, %d   %d, %d", headx, heady, tailx, taily); 
         int input = getch();                // get user input
         mvprintw(4,1, "after getchar: %d, %d   %d, %d", headx, heady, tailx, taily); 
-        int snakesize = snakestart;
         
         if(input == KEY_BACKSPACE){
             gameend = 0;
@@ -69,9 +71,11 @@ int main(void) {
             }else if(testcoll == 2){
                 altmovesnake(input);
                 growsnake();
+                if (snakesize >= win){
+                    gameend = 0;
+                }
                 mvprintw(rand() % LINES -1, rand() % COLS -1, "*");
-            }
-            else{
+            }else{
                 altmovesnake(input);
             }
             
@@ -103,6 +107,7 @@ void initializepit(){
         move(i, COLS-1);
         printw("|");
     }
+    win = COLS + LINES;
     mvprintw(rand() % LINES -1, rand() % COLS -1, "*"); //Should place a trophy in random spot of pit
 }
 
@@ -117,7 +122,7 @@ void makesnake(int direction){
     struct snake* node= (struct snake*)malloc(sizeof(struct snake));
     int x = tail->x; int y = tail->y; 
     head->x = x; head->y = y;
-    for(int i = 1; i < snakestart ; i++){
+    for(int i = 1; i < snakesize ; i++){
         
 
         if(direction == KEY_LEFT){
@@ -143,30 +148,40 @@ void makesnake(int direction){
     
 }
 
-void altmakesnake(int direction){
+void altmakesnake(){
+    int randdir = rand() % 4;    
     headx = COLS/2;
     heady = LINES/2;
     taily = LINES/2; tailx = COLS/2;
-    headdir = direction; taildir = direction;
+    if(randdir == 0){
+        headdir = KEY_LEFT;
+    }else if (randdir == 2){
+        headdir = KEY_RIGHT;
+    }else if(randdir == 1){
+        headdir = KEY_UP;
+    }else{
+        headdir = KEY_DOWN;
+    }
+    taildir = headdir;
     
-    for(int i = 0; i < snakestart ; i++){
+    for(int i = 0; i < snakesize ; i++){
 
-        if(direction == KEY_LEFT){
+        if(headdir == KEY_LEFT){
             tailx +=1;
             mvprintw(heady, headx + i , "<");
             
         }
-        else if(direction == KEY_RIGHT){
+        else if(headdir == KEY_RIGHT){
             tailx-=1;
             mvprintw(heady, headx - i, ">");
             
         }
-        else if(direction == KEY_UP){
+        else if(headdir == KEY_UP){
             taily += 1;
             mvprintw(heady + i, headx, "^");
             
         }
-        else if(direction == KEY_DOWN){
+        else if(headdir == KEY_DOWN){
             taily -= 1;
             mvprintw(heady - i, headx, "v");
             
@@ -320,7 +335,14 @@ int detectcollision(int direction){
     }
 }
 void gameover(){
-    mvprintw(LINES/2, COLS/2, "Game Over! Press any key to exit");
+    mvprintw(LINES/2, (COLS/2)-10, "Game Over! Score: %d", snakesize);
+    mvprintw(LINES/2 + 1, (COLS/2) - 11, "Press any key to exit");
+    refresh();
+    getchar();
+}
+
+void gamewin(){
+    mvprintw(LINES/2 - 15, COLS/2, "You won! Press any key to exit");
     refresh();
     getchar();
 }
@@ -347,4 +369,5 @@ void growsnake(){
         taily -= 1;
         mvprintw(taily, tailx, "v");
     }
+snakesize += 1;    
 }
