@@ -63,7 +63,7 @@ int main(void) {
                 if (snakestart >= win){
                     gameend = 0;
                 }
-                mvprintw(rand() % LINES -1, rand() % COLS -1, "*");
+                setTrophy();
             }else{
                 altmovesnake(input, snake_array);
             }         
@@ -84,8 +84,14 @@ int main(void) {
                 altmovesnake(snake_array[0].current_direction, snake_array);
             }
         }
-
-        usleep(500000); //wait half a second
+        int speed = 550000;
+        if((550000-(10000 * snakestart)) < 0){
+            speed = 10000;
+        }
+        else{
+            speed = 550000 - (10000 * snakestart);
+        }        
+        usleep(speed); //wait half a second at start, speeding up as the snake's length increases
         refresh();
     }
     endwin();               // quit ncurses
