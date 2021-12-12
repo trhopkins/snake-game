@@ -10,6 +10,9 @@
 
 int snakestart = 5;
 int trophyValue;
+int trophyExpiration;
+int trophyX;
+int trophyY;
 
 struct snake {
     int current_direction; 
@@ -36,12 +39,25 @@ int main(void) {
     keypad(stdscr, TRUE);
     noecho();
     nodelay(stdscr, TRUE);
-    srand(time(0));
+    srand(time(0)); //seeds random function
     initializepit();        //create border around "snake pit"
     refresh();
 
     struct snake snake_array[((COLS * 2) + (LINES * 2))/2];
-    altmakesnake(KEY_RIGHT, snake_array);
+    int dir = rand() % 4;
+    if(dir == 0){
+        snake_array[0].current_direction = KEY_RIGHT;
+    }
+    else if(dir == 1){
+        snake_array[0].current_direction = KEY_DOWN;
+    }
+    else if(dir == 2){
+        snake_array[0].current_direction = KEY_LEFT;
+    }
+    else if(dir == 3){
+        snake_array[0].current_direction = KEY_UP;
+    }
+    altmakesnake(snake_array[0].current_direction, snake_array);
     refresh();
     int gameend = 1;
 
@@ -91,7 +107,11 @@ int main(void) {
         else{
             speed = 550000 - (10000 * snakestart);
         }        
-        usleep(speed); //wait half a second at start, speeding up as the snake's length increases
+        usleep(speed); trophyExpiration--;//wait half a second at start, speeding up as the snake's length increases
+        if(trophyExpiration == 0){
+            mvprintw(trophyY, trophyX, " ");
+            setTrophy();
+        }
         refresh();
     }
     endwin();               // quit ncurses
@@ -103,9 +123,8 @@ int main(void) {
 void setTrophy(){
     //get random value from 1 to 9
     trophyValue = (rand() % 9) + 1;
+    trophyExpiration = ((rand() % 9) + 1)* 2;
     //print the value of the trophy on a random spot of the pit
-    int trophyX;
-    int trophyY;        
     trophyX = (rand() % COLS -3) + 2;
     trophyY = (rand() % LINES -3) + 2;
     if(trophyX <= 0 || trophyX >= COLS -1 || trophyY <= 0 || trophyY >= LINES -1)
