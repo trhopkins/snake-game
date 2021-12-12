@@ -104,7 +104,13 @@ void setTrophy(){
     //get random value from 1 to 9
     trophyValue = (rand() % 9) + 1;
     //print the value of the trophy on a random spot of the pit
-    mvprintw((rand() % LINES -2) + 1, (rand() % COLS -2) + 1, "%d", trophyValue);
+    int trophyX;
+    int trophyY;        
+    trophyX = (rand() % COLS -3) + 2;
+    trophyY = (rand() % LINES -3) + 2;
+    if(trophyX <= 0 || trophyX >= COLS -1 || trophyY <= 0 || trophyY >= LINES -1)
+        mvprintw(2, 2, "Error, please try again"); 
+    mvprintw(trophyY, trophyX, "%d", trophyValue);
 }
 // creates the border around the playing area
 void initializepit() {
