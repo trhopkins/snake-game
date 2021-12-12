@@ -9,6 +9,7 @@
 
 
 int snakestart = 5;
+int trophyValue;
 
 struct snake {
     int current_direction; 
@@ -16,6 +17,7 @@ struct snake {
     int y;
 };
 
+void setTrophy();
 void initializepit();
 int detectcollision(int, struct snake[]);
 void altmakesnake(int, struct snake[]);
@@ -77,7 +79,7 @@ int main(void) {
                 if (snakestart >= win){
                     gameend = 0;
                 }
-                mvprintw(rand() % LINES -1, rand() % COLS -1, "*");
+                setTrophy();
             }else{
                 altmovesnake(snake_array[0].current_direction, snake_array);
             }
@@ -90,6 +92,14 @@ int main(void) {
     return 0;               // exit program
 }
 
+
+//Places a trophy, with a random value from 1 to 9, randomly in the pit
+void setTrophy(){
+    //get random value from 1 to 9
+    trophyValue = (rand() % 9) + 1;
+    //print the value of the trophy on a random spot of the pit
+    mvprintw(rand() % LINES -1, rand() % COLS -1, "%d", trophyValue);
+}
 // creates the border around the playing area
 void initializepit() {
     win = LINES + COLS;
@@ -105,7 +115,7 @@ void initializepit() {
         move(i, COLS-1);
         printw("|");
     }
-    mvprintw(rand() % LINES -1, rand() % COLS -1, "*"); //Should place a trophy in random spot of pit
+    setTrophy(); //Should place a trophy in random spot of pit
 }
 
 
@@ -192,7 +202,7 @@ int detectcollision(int direction, struct snake array[]){
     }
     if(testch == ' '){
         return 0;
-    }else if (testch == '*'){
+    }else if (testch == '1' || testch == '2' || testch == '3' || testch == '4' || testch == '5' || testch == '6' || testch == '7' || testch == '8' || testch == '9'){
         return 2;
     }
     else{
@@ -214,23 +224,24 @@ void gamewin(){
 }
 
 void growsnake(struct snake array[]){
-    
-    snakestart += 1; 
-    array[snakestart - 1].x = array[snakestart - 2].x; array[snakestart - 1].y = array[snakestart - 2].y;
-    array[snakestart - 1].current_direction = array[snakestart - 2].current_direction;
-    
-    if(array[snakestart - 1].current_direction == KEY_LEFT){
+    for(int i=1;i<trophyValue;i++){
+        snakestart += 1; 
+        array[snakestart - 1].x = array[snakestart - 2].x; array[snakestart - 1].y = array[snakestart - 2].y;
+        array[snakestart - 1].current_direction = array[snakestart - 2].current_direction;
         
-        array[snakestart - 1].x += 1;
-        mvprintw(array[snakestart - 1].y, array[snakestart - 1].y, "<");
-    }else if(array[snakestart - 1].current_direction == KEY_RIGHT){
-        array[snakestart - 1].x -= 1;
-        mvprintw(array[snakestart - 1].y, array[snakestart - 1].x, ">");
-    }else if(array[snakestart - 1].current_direction == KEY_UP){
-        array[snakestart - 1].y += 1;
-        mvprintw(array[snakestart - 1].y, array[snakestart - 1].x, "^");
-    }else if (array[snakestart - 1].current_direction== KEY_DOWN){
-        array[snakestart - 1].y -= 1;
-        mvprintw(array[snakestart - 1].y, array[snakestart - 1].x, "v");
+        if(array[snakestart - 1].current_direction == KEY_LEFT){
+            
+            array[snakestart - 1].x += 1;
+            mvprintw(array[snakestart - 1].y, array[snakestart - 1].y, "<");
+        }else if(array[snakestart - 1].current_direction == KEY_RIGHT){
+            array[snakestart - 1].x -= 1;
+            mvprintw(array[snakestart - 1].y, array[snakestart - 1].x, ">");
+        }else if(array[snakestart - 1].current_direction == KEY_UP){
+            array[snakestart - 1].y += 1;
+            mvprintw(array[snakestart - 1].y, array[snakestart - 1].x, "^");
+        }else if (array[snakestart - 1].current_direction== KEY_DOWN){
+            array[snakestart - 1].y -= 1;
+            mvprintw(array[snakestart - 1].y, array[snakestart - 1].x, "v");
+        }
     } 
 }
