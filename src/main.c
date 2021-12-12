@@ -98,7 +98,7 @@ void setTrophy(){
     //get random value from 1 to 9
     trophyValue = (rand() % 9) + 1;
     //print the value of the trophy on a random spot of the pit
-    mvprintw((rand() % LINES -1) + 1, (rand() % COLS -1) + 1, "%d", trophyValue);
+    mvprintw((rand() % LINES -2) + 1, (rand() % COLS -2) + 1, "%d", trophyValue);
 }
 // creates the border around the playing area
 void initializepit() {
@@ -192,7 +192,7 @@ void altmovesnake(int direction, struct snake array[]) {
 int detectcollision(int direction, struct snake array[]){
     int testch;
     if(direction == KEY_LEFT){
-        testch = mvinch(array[0].y, array[0].x- 1);
+        testch = mvinch(array[0].y, array[0].x - 1);
     }if(direction == KEY_RIGHT){
         testch = mvinch(array[0].y, array[0].x + 1);
     }if(direction == KEY_UP){
@@ -224,24 +224,27 @@ void gamewin(){
 }
 
 void growsnake(struct snake array[]){
-    for(int i=1;i<trophyValue;i++){
-        snakestart += 1; 
-        array[snakestart - 1].x = array[snakestart - 2].x; array[snakestart - 1].y = array[snakestart - 2].y;
-        array[snakestart - 1].current_direction = array[snakestart - 2].current_direction;
+    for(int i=1;i<=trophyValue;i++){
+        snakestart += 1; //add value to snake size
+        array[snakestart - 1].x = array[snakestart - 2].x; array[snakestart - 1].y = array[snakestart - 2].y; //new tail given position of old tail
+        array[snakestart - 1].current_direction = array[snakestart - 2].current_direction; //new tail given direction of old tail
         
+        //If statement for direction of tail
         if(array[snakestart - 1].current_direction == KEY_LEFT){
             
-            array[snakestart - 1].x += 1;
-            mvprintw(array[snakestart - 1].y, array[snakestart - 1].y, "<");
+            array[snakestart - 1].x += 1; //grow tail to the right
+            mvprintw(array[snakestart - 1].y, array[snakestart - 1].x, "<"); //place left facing arrow in tail position
         }else if(array[snakestart - 1].current_direction == KEY_RIGHT){
-            array[snakestart - 1].x -= 1;
-            mvprintw(array[snakestart - 1].y, array[snakestart - 1].x, ">");
+            array[snakestart - 1].x -= 1; //grow tail to the left
+            mvprintw(array[snakestart - 1].y, array[snakestart - 1].x, ">"); //place right facing arrow in tail position
         }else if(array[snakestart - 1].current_direction == KEY_UP){
-            array[snakestart - 1].y += 1;
-            mvprintw(array[snakestart - 1].y, array[snakestart - 1].x, "^");
+            array[snakestart - 1].y += 1; //grow tail down
+            mvprintw(array[snakestart - 1].y, array[snakestart - 1].x, "^"); //place up facing arrow in tail position
         }else if (array[snakestart - 1].current_direction== KEY_DOWN){
-            array[snakestart - 1].y -= 1;
-            mvprintw(array[snakestart - 1].y, array[snakestart - 1].x, "v");
+            array[snakestart - 1].y -= 1; //grow tail up
+            mvprintw(array[snakestart - 1].y, array[snakestart - 1].x, "v"); //place down facing arrow in tail position
         }
-    } 
+    }
+    move(array[0].y, array[0].x);
+    refresh(); 
 }
