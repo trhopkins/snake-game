@@ -14,6 +14,7 @@ int trophyValue;
 int trophyExpiration;
 int trophyX;
 int trophyY;
+int win;
 
 struct snake {
     int current_direction; 
@@ -30,7 +31,7 @@ void gameover();
 void gamewin();
 void growsnake(struct snake[]);
 
-int win;
+
 
 
 int main(void) {
@@ -45,6 +46,7 @@ int main(void) {
     refresh();
 
     struct snake snake_array[((COLS * 2) + (LINES * 2))/2];
+    //pick a random direction for the snake to start in
     int dir = rand() % 4;
     if(dir == 0){
         snake_array[0].current_direction = KEY_RIGHT;
@@ -70,11 +72,11 @@ int main(void) {
             gameend = 0;
         } else if (input == KEY_LEFT || input == KEY_RIGHT || input == KEY_DOWN || input == KEY_UP) {
             int testcoll = detectcollision(input, snake_array);
-            if(testcoll == 1){
+            if(testcoll == 1){//if the snake has run into a wall/itself
                 gameover(); 
                 refresh();               
                 gameend = 0;
-            }else if(testcoll == 2){
+            }else if(testcoll == 2){//if the snake has run into a trophy
                 movesnake(input, snake_array);
                 growsnake(snake_array);
                 if (snakesize >= win){
@@ -86,14 +88,15 @@ int main(void) {
             }         
         } else {
             int testcoll = detectcollision(snake_array[0].current_direction, snake_array);
-            if(testcoll == 1){
+            if(testcoll == 1){//if the snake has run into a wall/itself
                 gameover(); 
                 refresh();               
                 gameend = 0;
-            }else if(testcoll == 2){
+            }else if(testcoll == 2){//if the snake has run into a trophy
                 movesnake(snake_array[0].current_direction, snake_array);
                 growsnake(snake_array);
                 if (snakesize >= win){
+                    gamewin();
                     gameend = 0;
                 }
                 setTrophy();
@@ -102,7 +105,7 @@ int main(void) {
             }
         }
         
-        if(speed > 10000){
+        if(speed > 10000){//prevents speed from becoming negative or too fast
             speed = 530000 - (10000 * snakesize);
         }       
         trophyExpiration -= speed;        
@@ -149,10 +152,10 @@ void initializepit() {
         move(i, COLS-1);
         printw("|");
     }
-    setTrophy(); //Should place a trophy in random spot of pit
+    setTrophy(); //places a trophy in random spot of pit
 }
 
-
+//prints the initial snake to center of screen in given direction and populates the snake array
 void makesnake(int direction, struct snake array[]) {
     array[0].x = COLS/2; //head set to vertical center
     array[0].y = LINES/2; //head set to horizonal center
@@ -185,11 +188,12 @@ void makesnake(int direction, struct snake array[]) {
 
 }
 
+//moves snake in the given direction 
 void movesnake(int direction, struct snake array[]) {
     mvprintw(array[snakesize-1].y, array[snakesize-1].x, " ");
-
+    //Each element's position is set to the position of the element before it
     for(int i = snakesize - 1; i > 0; i--){
-        array[i].x = array[i-1].x; array[i].y = array[i-1].y; //Each element's position is set to the position of the element before it
+        array[i].x = array[i-1].x; array[i].y = array[i-1].y;
         array[i].current_direction = array[i - 1].current_direction;
     }
 
@@ -222,8 +226,8 @@ void movesnake(int direction, struct snake array[]) {
 
 }
 
-/*returns 0 if there is no character in the next space, and 1 if there is a character that isn't a trophy, and 2 if the character is a trophy
-*/
+/*returns 0 if there is no character in the next space, and 1 if there is a character that isn't a trophy, 
+and 2 if the character is a trophy */
 int detectcollision(int direction, struct snake array[]){
     int testch;
     if(direction == KEY_LEFT){
@@ -245,6 +249,7 @@ int detectcollision(int direction, struct snake array[]){
     }
 }
 
+//ends the game, printing text and outputting the score to the screen
 void gameover(){
     mvprintw(LINES/2, (COLS/2)-10, "Game Over! Score: %d", snakesize);
     mvprintw(LINES/2 + 1, (COLS/2) - 11, "Press any key to exit");
@@ -252,12 +257,14 @@ void gameover(){
     getchar();
 }
 
+//ends the game with a win message
 void gamewin(){
     mvprintw(LINES/2 - 15, COLS/2, "You won! Press any key to exit");
     refresh();
     getchar();
 }
 
+//grow the snake in the opposite direction of the tail however many times as indicated by trophyValue
 void growsnake(struct snake array[]){
     for(int i=1;i<=trophyValue;i++){
         snakesize += 1; //add value to snake size
