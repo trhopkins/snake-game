@@ -123,12 +123,15 @@ void setTrophy(){
     //get random value from 1 to 9
     trophyValue = (rand() % 9) + 1;
     trophyExpiration = ((rand() % 9) + 1) * 1000000;
-    //trophyExpiration = 120 * 500000; //uncomment this line if you want to make it fun
+    //trophyExpiration = 120 * 500000;          //<- uncomment this line if you want to make it fun
+
     //print the value of the trophy on a random spot of the pit
     trophyX = (rand() % (COLS -3)) + 2;
     trophyY = (rand() % (LINES -3)) + 2;
-    if(trophyX <= 0 || trophyX >= COLS -1 || trophyY <= 0 || trophyY >= LINES -1)
-        mvprintw(2, 2, "Error, please try again"); 
+    while(mvinch(trophyX, trophyY) != ' '){
+        trophyX = (rand() % (COLS -3)) + 2;
+        trophyY = (rand() % (LINES -3)) + 2;
+    }
     mvprintw(trophyY, trophyX, "%d", trophyValue);
 }
 // creates the border around the playing area
