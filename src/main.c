@@ -8,7 +8,8 @@
 #include <unistd.h>
 
 
-int snakestart = 5;
+int snakestart = 3;
+int speed = 530000; //initial speed of snake is half a second
 int trophyValue;
 int trophyExpiration;
 int trophyX;
@@ -100,15 +101,13 @@ int main(void) {
                 altmovesnake(snake_array[0].current_direction, snake_array);
             }
         }
-        int speed = 550000;
-        if((550000-(10000 * snakestart)) < 0){
-            speed = 10000;
-        }
-        else{
-            speed = 550000 - (10000 * snakestart);
-        }        
-        usleep(speed); trophyExpiration--;//wait half a second at start, speeding up as the snake's length increases
-        if(trophyExpiration == 0){
+        
+        if(speed > 10000){
+            speed = 530000 - (10000 * snakestart);
+        }       
+        trophyExpiration -= speed;        
+        usleep(speed);//wait half a second at start, speeding up as the snake's length increases
+        if(trophyExpiration <= 0){
             mvprintw(trophyY, trophyX, " ");
             setTrophy();
         }
@@ -123,10 +122,11 @@ int main(void) {
 void setTrophy(){
     //get random value from 1 to 9
     trophyValue = (rand() % 9) + 1;
-    trophyExpiration = ((rand() % 9) + 1)* 2;
+    trophyExpiration = ((rand() % 9) + 1) * 1000000;
+    //trophyExpiration = 120 * 500000; //uncomment this line if you want to make it fun
     //print the value of the trophy on a random spot of the pit
-    trophyX = (rand() % COLS -3) + 2;
-    trophyY = (rand() % LINES -3) + 2;
+    trophyX = (rand() % (COLS -3)) + 2;
+    trophyY = (rand() % (LINES -3)) + 2;
     if(trophyX <= 0 || trophyX >= COLS -1 || trophyY <= 0 || trophyY >= LINES -1)
         mvprintw(2, 2, "Error, please try again"); 
     mvprintw(trophyY, trophyX, "%d", trophyValue);
@@ -187,6 +187,7 @@ void altmovesnake(int direction, struct snake array[]) {
 
     for(int i = snakestart - 1; i > 0; i--){
         array[i].x = array[i-1].x; array[i].y = array[i-1].y; //Each element's position is set to the position of the element before it
+        array[i].current_direction = array[i - 1].current_direction;
     }
 
     //prints an arrow in place of head, sets head direction
